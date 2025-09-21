@@ -307,11 +307,11 @@
   modeToggle.on('click', () => {
     if($('body').hasClass('light-mode')) {
       $('body').removeClass('light-mode').addClass('dark-mode');
-      modeToggle.text('Switch to Light Mode');
+      modeToggle.text('Pindah Mode Terang');
       modeToggle.attr('aria-pressed', 'true');
     } else {
       $('body').removeClass('dark-mode').addClass('light-mode');
-      modeToggle.text('Switch to Dark Mode');
+      modeToggle.text('Pindah Mode Gelap');
       modeToggle.attr('aria-pressed', 'false');
     }
   });
