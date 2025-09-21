@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Al-Qur'an Online Indonesia</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<style>
+  :root {
+    --bg-light: #f8f9fa;
+    --text-light: #212529;
+    --bg-dark: #121212;
+    --text-dark: #e0e0e0;
+    --primary-color: #0b3d91;
+    --highlight-bg-light: #fff59d;
+    --highlight-bg-dark: #f9f871;
+  }
+  body.light-mode {
+    background-color: var(--bg-light);
+    color: var(--text-light);
+  }
+  body.dark-mode {
+    background-color: var(--bg-dark);
+    color: var(--text-dark);
+  }
+  .container {
+    max-width: 900px;
+    margin-top: 20px;
+  }
+  .verse {
+    margin-bottom: 20px;
+    padding: 15px 20px 50px 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 0 8px rgba(0,0,0,0.1);
+    position: relative;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  body.dark-mode .verse {
+    background: #1e1e1e;
+    box-shadow: 0 0 10px rgba(255,255,255,0.1);
+  }
+  .verse-number {
+    position: absolute;
+    top: 15px;
+    left: 20px;
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: 700;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    user-select: none;
+  }
+  .arabic-text {
+    font-size: 2rem;
+    text-align: right;
+    direction: rtl;
+    font-family: "Amiri", serif;
+    color: var(--primary-color);
+    cursor: pointer;
+    user-select: text;
+    padding-right: 50px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    margin-bottom: 0.5rem;
+  }
+  body.dark-mode .arabic-text {
+    color: #90caf9;
+  }
+  .arabic-text:hover, .arabic-text:focus {
+    background-color: #d0e7ff;
+    outline: none;
+  }
+  body.dark-mode .arabic-text:hover, body.dark-mode .arabic-text:focus {
+    background-color: #37474f;
+  }
+  .word {
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.2s;
+  }
+  .word-highlight {
+    background-color: var(--highlight-bg-light);
+  }
+  body.dark-mode .word-highlight {
+    background-color: var(--highlight-bg-dark);
+  }
+  .translation {
+    margin-top: 8px;
+    font-size: 0.9rem;
+    color: inherit;
+    user-select: text;
+    padding-left: 50px;
+    transition: color 0.3s ease;
+    line-height: 1.4;
+  }
+  .current-ayah {
+    background-color: #ffe082;
+  }
+  body.dark-mode .current-ayah {
+    background-color: #ffecb3;
+  }
+  .controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  input[type=range] {
+    width: 150px;
+  }
+  #surah-select {
+    max-width: 400px;
+    border-radius: 0.375rem;
+    border: 1px solid #ced4da;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+  }
+</style>
+</head>
+<body class="light-mode">
+
+<div class="container">
+  <h1 id="surah-title">Loading Surah...</h1>
+
+  <div class="controls">
+    <div>
+      <label for="surah-select" class="form-label me-2">Select Surah:</label>
+      <select id="surah-select"></select>
+    </div>
+    <div>
+      <label for="mode-toggle" class="form-label me-2">Mode:</label>
+      <button id="mode-toggle" aria-pressed="false">Switch to Dark Mode</button>
+    </div>
+    <div>
+      <label for="text-size-slider" class="form-label me-2">Text Size:</label>
+      <input type="range" id="text-size-slider" min="14" max="32" value="20" />
+      <span id="text-size-value">20px</span>
+    </div>
+  </div>
+
+  <div id="verses-container"></div>
+
+  <audio id="audio-player" controls style="width: 100%; max-width: 900px; margin-top: 20px;">
+    <source src="" type="audio/mpeg" />
+    Your browser does not support the audio element.
+  </audio>
+  <div id="audio-status" style="margin-top: 5px; font-style: italic; color: #555;"></div>
+</div>
+
+<script>
+  const surahSelect = $('#surah-select');
+  const versesContainer = $('#verses-container');
+  const audioPlayer = document.getElementById('audio-player');
+  const audioSource = $('#audio-player source');
+  const audioStatus = $('#audio-status');
+  const modeToggle = $('#mode-toggle');
+  const textSizeSlider = $('#text-size-slider');
+  const textSizeValue = $('#text-size-value');
+
+  let surahList = [];
+  let arabicAyahs = [];
+  let translationAyahs = [];
+  let currentAyahIndex = 0;
+
+  // Muatkan senarai surah ke dropdown
+  async function loadSurahList() {
+    const res = await fetch('https://api.alquran.cloud/v1/surah');
+    const data = await res.json();
+    if(data.status === "OK") {
+      surahList = data.data;
+      surahList.forEach(surah => {
+        surahSelect.append(`<option value="${surah.number}">${surah.number}. ${surah.englishName} (${surah.name})</option>`);
+      });
+      loadSurah(1);
+    }
+  }
+
+  // Fungsi untuk wrap perkataan Arab
+  function wrapWords(text) {
+    const words = text.match(/[\u0600-\u06FF]+|[^\s\u0600-\u06FF]+/g) || [];
+    return words.map((word, i) => `<span class="word" tabindex="0" data-word-index="${i}">${word}</span>`).join(' ');
+  }
+
+  // Muatkan surah lengkap dengan ayat dan terjemahan
+  async function loadSurah(surahNumber) {
+    currentAyahIndex = 0;
+    $('#surah-title').text('Loading...');
+    versesContainer.html('<p>Loading verses...</p>');
+    audioStatus.text('');
+    try {
+      const res = await fetch(`https://api.alquran.cloud/v1/surah/${surahNumber}/editions/quran-uthmani,id.indonesian`);
+      const data = await res.json();
+      if(data.status === "OK" && data.data.length === 2) {
+        arabicAyahs = data.data[0].ayahs;
+        translationAyahs = data.data[1].ayahs;
+
+        $('#surah-title').text(`Surah ${surahList.find(s => s.number == surahNumber).englishName} (${surahList.find(s => s.number == surahNumber).name})`);
+
+        let html = '';
+        arabicAyahs.forEach((ayah, i) => {
+          html += `
+            <div class="verse" data-ayah-index="${i}">
+              <div class="verse-number">${ayah.numberInSurah}</div>
+              <div class="arabic-text" tabindex="0" role="button" data-ayah-index="${i}">
+                ${wrapWords(ayah.text)}
+              </div>
+              <div class="translation">${translationAyahs[i].text}</div>
+            </div>
+          `;
+        });
+        versesContainer.html(html);
+        highlightCurrentAyah();
+        playAyahAudio(currentAyahIndex);
+      } else {
+        versesContainer.html('<p>Failed to load verses.</p>');
+      }
+    } catch (e) {
+      versesContainer.html('<p>Error loading verses.</p>');
+      console.error(e);
+    }
+  }
+
+  // Dapatkan URL audio per ayat dari API
+  async function getAudioUrl(ayahNumber) {
+    try {
+      const res = await fetch(`https://api.alquran.cloud/v1/ayah/${ayahNumber}/ar.alafasy`);
+      const data = await res.json();
+      if(data.status === "OK") {
+        return data.data.audio;
+      }
+      return null;
+    } catch(e) {
+      console.error('Error fetching audio URL:', e);
+      return null;
+    }
+  }
+
+  // Mainkan audio ayat berdasarkan indeks
+  async function playAyahAudio(index) {
+    if(index < 0 || index >= arabicAyahs.length) return;
+    currentAyahIndex = index;
+    const ayahNumber = arabicAyahs[index].number;
+    audioStatus.text(`Loading audio for Ayah ${arabicAyahs[index].numberInSurah}...`);
+    const audioUrl = await getAudioUrl(ayahNumber);
+    if(!audioUrl) {
+      audioStatus.text(`Audio for Ayah ${arabicAyahs[index].numberInSurah} not available, skipping...`);
+      setTimeout(() => {
+        if(currentAyahIndex + 1 < arabicAyahs.length) {
+          playAyahAudio(currentAyahIndex + 1);
+        } else {
+          audioStatus.text('Surah finished.');
+        }
+      }, 1500);
+      return;
+    }
+    audioSource.attr('src', audioUrl);
+    audioPlayer.pause();
+    audioPlayer.load();
+    audioPlayer.play();
+    audioStatus.text(`Playing Surah Ayah ${arabicAyahs[index].numberInSurah}`);
+    highlightCurrentAyah();
+  }
+
+  // Highlight ayat yang sedang dimainkan
+  function highlightCurrentAyah() {
+    $('.verse').removeClass('current-ayah');
+    $(`.verse[data-ayah-index="${currentAyahIndex}"]`).addClass('current-ayah');
+    $(`.verse[data-ayah-index="${currentAyahIndex}"]`)[0].scrollIntoView({behavior: 'smooth', block: 'center'});
+  }
+
+  // Event ketika audio selesai, mainkan ayat seterusnya
+  audioPlayer.addEventListener('ended', () => {
+    if(currentAyahIndex + 1 < arabicAyahs.length) {
+      playAyahAudio(currentAyahIndex + 1);
+    } else {
+      audioStatus.text('Surah finished.');
+    }
+  });
+
+  // Klik pada ayat Arab untuk mainkan audio ayat
+  $(document).on('click', '.arabic-text', function() {
+    const index = parseInt($(this).attr('data-ayah-index'));
+    playAyahAudio(index);
+  });
+
+  // Toggle highlight perkataan
+  $(document).on('click', '.word', function(e) {
+    e.stopPropagation();
+    $(this).toggleClass('word-highlight');
+  });
+
+  // Tukar mod malam/siang
+  modeToggle.on('click', () => {
+    if($('body').hasClass('light-mode')) {
+      $('body').removeClass('light-mode').addClass('dark-mode');
+      modeToggle.text('Switch to Light Mode');
+      modeToggle.attr('aria-pressed', 'true');
+    } else {
+      $('body').removeClass('dark-mode').addClass('light-mode');
+      modeToggle.text('Switch to Dark Mode');
+      modeToggle.attr('aria-pressed', 'false');
+    }
+  });
+
+  // Slider saiz teks
+  textSizeSlider.on('input change', () => {
+    const size = textSizeSlider.val();
+    $('.arabic-text').css('font-size', size + 'px');
+    $('.translation').css('font-size', (size * 0.75) + 'px');
+    textSizeValue.text(size + 'px');
+  });
+
+  // Load surah list dan surah pertama
+  loadSurahList();
+
+  // Tukar surah bila dropdown berubah
+  surahSelect.on('change', () => {
+    const selectedSurah = parseInt(surahSelect.val());
+    loadSurah(selectedSurah);
+  });
+</script>
+
+</body>
+</html>
