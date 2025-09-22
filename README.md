@@ -4,7 +4,9 @@ API untuk mengecek informasi pajak kendaraan bermotor di beberapa provinsi di In
 
 ## ✨ Fitur
 ➡️ Akses Al-Qur’an dimana saja & kapan saja
+
 ➡️ Lengkap dengan terjemahan & tafsir
+
 ➡️ Fitur pencarian ayat, bookmark, & audio tilawah
 
 ## 🔗 API Al-Quran 
