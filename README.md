@@ -16,15 +16,10 @@ Host: `https://api.alquran.cloud/v1/surah`
 GET audio /ayah/${ayahNumber}/ar.alafasy)
 GET surah lengkap & terjemahan surah/${surahNumber}/editions/quran-uthmani,id.indonesian)
 ```
-### 📝 Parameter URL
-| Parameter | Tipe | Deskripsi |
+### 📝 Parameter 
+| Language | Name | Format | Direction |
 |-----------|------|-----------|
- "language": "de",
-      "name": "Abu Rida",
-      "englishName": "Abu Rida Muhammad ibn Ahmad ibn Rassoul",
-      "format": "text",
-      "type": "translation",
-      "direction": "ltr") |
+ "language": "id", "name": "Abu Rida", "format": "text","type": "translation", "direction": "ltr")
 
 ### ✅ Format Response 
 ```json
