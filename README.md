@@ -1,8 +1,9 @@
 # ✨📖✨ Aplikasi Ngaji Online Indonesia ✨📖✨
+📖 “Mendekatkan Al-Qur’an dalam genggaman Anda”
 
 ![Typing SVG](https://readme-typing-svg.herokuapp.com?font=Tahoma&pause=1000&width=435&lines=Yuk+Kita+Murottal+Qur'an)
 
-📖 “Mendekatkan Al-Qur’an dalam genggaman Anda”
+
 
 ## ✨ Fitur
 ➡️ Akses Al-Qur’an dimana saja & kapan saja
