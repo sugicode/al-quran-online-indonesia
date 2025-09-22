@@ -55,4 +55,4 @@ GET surah lengkap & terjemahan surah/${surahNumber}/editions/quran-uthmani,id.in
 ```
 
 Made with ❤️ by [SugiCode]
-[![Typing SVG](https://readme-typing-svg.herokuapp.com?font=Tahoma&pause=1000&width=435&lines=Yuk+Ngaji+Bareng)
+
