@@ -19,7 +19,7 @@ GET surah lengkap & terjemahan surah/${surahNumber}/editions/quran-uthmani,id.in
 ### 📝 Parameter 
 | Language | Name | Format | Direction |
 |-----------|------|-----------|
- "language": "id", "name": "Abu Rida", "format": "text","type": "translation", "direction": "ltr")
+( "language": "id", "name": "Abu Rida", "format": "text","type": "translation", "direction": "ltr")
 
 ### ✅ Format Response 
 ```json
