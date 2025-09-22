@@ -17,9 +17,10 @@ GET audio /ayah/${ayahNumber}/ar.alafasy)
 GET surah lengkap & terjemahan surah/${surahNumber}/editions/quran-uthmani,id.indonesian)
 ```
 ### 📝 Parameter 
-| Language | Name | Format | Direction |
-|-----------|------|-----------|
-( "language": "id", "name": "Abu Rida", "format": "text","type": "translation", "direction": "ltr")
+| Language id | Name | Format |
+|----------|------|--------------|
+| "language": "id", | "name": "Abu Rida", | "format": "text", |
+
 
 ### ✅ Format Response 
 ```json
