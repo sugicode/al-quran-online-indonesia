@@ -1,6 +1,9 @@
 # ✨📖✨ Aplikasi Ngaji Online Indonesia ✨📖✨
 
-API untuk mengecek informasi pajak kendaraan bermotor di beberapa provinsi di Indonesia.
+[![Typing SVG](https://readme-typing-svg.herokuapp.com?font=Tahoma&pause=1000&width=435&lines=Yuk+Kita+Murottal+Qur'an)]
+
+
+📖 “Mendekatkan Al-Qur’an dalam genggaman Anda”
 
 ## ✨ Fitur
 ➡️ Akses Al-Qur’an dimana saja & kapan saja
